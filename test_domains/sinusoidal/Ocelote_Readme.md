@@ -170,7 +170,7 @@ To speed up compilation, use the `-j <number of concurrent jobs>` option when ca
 To use ParFlow, the environment needs to be setup for it.
 
 
-### SEtting PARFLOW_DIR variable
+### Setting PARFLOW_DIR variable
 The environment variable PARFLOW_DIR needs to be set to the ParFlow install directory.
 
 ```bash
