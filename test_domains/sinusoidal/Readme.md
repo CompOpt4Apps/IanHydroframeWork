@@ -18,7 +18,7 @@ number_processes_X=4
 number_processes_Y=2
 number_processes_Z=1
 
-./scripts/run.sh ${number_processes_X} ${number_processes_Y} ${number_processes_z} ${number_cells_X} ${number_cells_Y} ${number_cells_z} ${number_timesteps} ${test_name}
+./scripts/run.sh ${number_processes_X} ${number_processes_Y} ${number_processes_Z} ${number_cells_X} ${number_cells_Y} ${number_cells_z} ${number_timesteps} ${test_name}
 ```
 
 By default, this test prints out the ParFlow standard output,
