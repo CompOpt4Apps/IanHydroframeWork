@@ -80,7 +80,7 @@ class FailedScriptExecutionError(RuntimeError):
     this.stderr = stderr
     this.exit_code = exit_code
   def __str__(this):
-    return "Script command \"" + (" ".join( this.command_list ) ) + f" failed with exit code {this.exit_code}.\np\nStandard Output:\n{stdout}\n\nStandard Error:\n{stderr}"
+    return "Script command \"" + (" ".join( this.command_list ) ) + f" failed with exit code {this.exit_code}.\np\nStandard Output:\n{this.stdout}\n\nStandard Error:\n{this.stderr}"
 
 class InvalidScriptOutputError(RuntimeError):
   def __init__(this, output):
@@ -96,12 +96,27 @@ class UnimplementedPredictionError(RuntimeError):
     return "Failed to find any valid prediction functions in analysis_module."
 
 class InvalidPredictionValueError(RuntimeError):
-  def __init__(this, value, function_name):
+  def __init__(this, value, reason, function_name=None):
     this.value = value
+    this.reason = reason
     this.function_name = function_name
 
   def __str__(this):
-    return f"Prediction function ({this.function_name}) produced an invalid value\n\tstr:"+str(this.value)+"\n\trepr: "+str(repr(this.value)) + "\n"
+    if this.function_name == None:
+      return f"Prediction function produced an invalid value:\n\t{this.reason}\n\tstr: "+str(this.value)+"\n\trepr: "+str(repr(this.value)) + "\n"
+    else:
+      return f"Prediction function \"{this.function_name}\" produced an invalid value:\n\t{this.reason}\n\tstr: "+str(this.value)+"\n\trepr: "+str(repr(this.value)) + "\n"
+
+class PredictionFunctionException(RuntimeError):
+  def __init__(this, expt, function_name=None):
+    this.expt = expt
+    this.function_name = function_name
+
+  def __str__(this):
+    if this.function_name == None:
+      return f"There was an exception during the execution of a user defined function:\n{this.expt}"
+    else:
+      return f"There was an exception during the execution of user defined function \"{this.function_name}\":\t\n{this.expt}"
 
 def move_file( src_path, dest_path, clobber=False ):
   if not clobber and os.path.exists( dest_path ):
@@ -216,16 +231,26 @@ def process_script( script_path, arguments, tcl_shell="tclsh", exact_command=Fal
 
 
 def is_legal_footprint_prediction_value( value ):
-  return value != None \
-    and type(value) in [int, float] \
-    and float(value) >= 0.0
+  if value == None:
+    return {"condition" : False, "reason" : "Value is None" }
+  if type(value) not in [int, float]:
+    return {"condition" : False, "reason" : f"Value is not numerical ({type(value)})" }
+  if float(value) < 0.0:
+    return {"condition" : False, "reason" : "Value less than 0.0" }
+  return {"condition" : True, "reason": None}
+
 
 def is_legal_runtime_prediction_value( value ):
-  return value != None \
-    and type(value) in [int, float] \
-    and float(value) >= 0.0
+  if value == None:
+    return {"condition" : False, "reason" : "Value is None" }
+  if type(value) not in [int, float]:
+    return {"condition" : False, "reason" : f"Value is not numerical ({type(value)})" }
+  if float(value) < 0.0:
+    return {"condition" : False, "reason" : "Value less than 0.0" }
+  return {"condition" : True, "reason": None}
 
-def predict( data, prediction_function, prediction_function_name, value_check_function ):
+
+def predict( data, prediction_function, value_check_function ):
   nx=data["grid"]["NX"]
   ny=data["grid"]["NY"]
   nz=data["grid"]["NZ"]
@@ -234,10 +259,14 @@ def predict( data, prediction_function, prediction_function_name, value_check_fu
   nq=data["process_topology"]["NQ"]
   nr=data["process_topology"]["NR"]
 
-  prediction_value = prediction_function( nx, ny, nz, timesteps, np, nq, nr)
+  try:
+    prediction_value = prediction_function( nx, ny, nz, timesteps, np, nq, nr)
+  except Exception as expt:
+    raise PredictionFunctionException(expt, prediction_function.__name__)
 
-  if not value_check_function(prediction_value):
-    raise InvalidPredictionValueError(prediction_value, prediction_function_name)
+  check = value_check_function(prediction_value)
+  if not check["condition"]:
+    raise InvalidPredictionValueError(prediction_value, check["reason"], prediction_function.__name__)
 
   return prediction_value
 
@@ -264,7 +293,6 @@ exit_codes = {
 }
 
 
-
 def main( argv=sys.argv ):
   script_root_path = os.path.abspath( os.path.dirname( argv[0] ) )
 
@@ -274,11 +302,11 @@ def main( argv=sys.argv ):
     estimation = dict(
       footprint = dict(
         value = "float",
-        units = "kilobyte"
+        units = "string"
       ),
       runtime = dict(
         value = "float",
-        units = "seconds"
+        units = "string"
       )
     ),
     configuration = dict(
@@ -342,7 +370,7 @@ def main( argv=sys.argv ):
     # metavar="backup_suffix",
     type=str,
     default=default_backup_suffix,
-    help=f"Suffix used when --replace-existing set. (Default <file_path>{default_backup_suffix})"
+    help=f"Suffix used when --replace-existing set. (Default: <file_path>{default_backup_suffix})"
   )
   parser.add_argument(
     "--replace-existing",
@@ -372,14 +400,28 @@ def main( argv=sys.argv ):
     # metavar="tcl_shell",
     type=str,
     default=default_tcl_shell,
-    help=f"Command for executing tcl scripts. (Default {default_tcl_shell})"
+    help=f"Command for executing tcl scripts. (Default: {default_tcl_shell})"
   )
   parser.add_argument(
     "--prediction-module",
     # metavar="prediction_module",
     type=str,
     default=default_prediction_module,
-    help=f"Path to prediction module. (Default {default_prediction_module})"
+    help=f"Path to prediction module. (Default: {default_prediction_module})"
+  )
+  parser.add_argument(
+    "--footprint-prediction-function",
+    # metavar="footprint_prediction_function",
+    type=str,
+    default="footprint_prediction_function",
+    help=f"Function in prediction module to use to predict ParFlow footprint (Default: \"footprint_prediction_function\")"
+  )
+  parser.add_argument(
+    "--runtime-prediction-function",
+    # metavar="runtime_prediction_function",
+    type=str,
+    default="runtime_prediction_function",
+    help=f"Function in prediction module to use to predict ParFlow footprint (Default: \"runtime_prediction_function\")"
   )
 
   parser.add_argument(
@@ -397,9 +439,6 @@ def main( argv=sys.argv ):
     action="store_true",
     help="Print format of report."
   )
-
-  # NOTE: This functionality is available, but need clean way of implementing this from the module side.
-  #parser.add_argument("--prediction_function", type=str, default=None, help=f"Path to prediction module. (Default is function returned by module's 'get_prediction_function' function )")
 
   parser.add_argument("--debug", default=False, action="store_true")
 
@@ -437,36 +476,21 @@ def main( argv=sys.argv ):
 
     module_dict = dict( inspect.getmembers(prediction_module) )
 
-    if "get_footprint_prediction_function" in module_dict:
-      footprint_prediction_function, footprint_prediction_function_name = prediction_module.get_footprint_prediction_function()
-    else:
-      print_error( f"Error: Prediction module ({args.prediction_module}) lacks the required get_footprint_prediction_function() function.")
-      return exit_codes["prediction_module_error"]
-      # NOTE: This functionality is available, but need clean way of implementing this from the module side.
-      # "\nAlternatively, choose prediction function with --prediction_function <function name>."
+    footprint_prediction_function = None
+    runtime_prediction_function = None
 
-    if "get_runtime_prediction_function" in module_dict:
-      runtime_prediction_function, runtime_prediction_function_name = prediction_module.get_runtime_prediction_function()
+    if args.footprint_prediction_function in module_dict:
+      footprint_prediction_function = module_dict[args.footprint_prediction_function]
     else:
-      print_error( f"Error: Prediction module ({args.prediction_module}) lacks the required get_runtime_prediction_function() function.")
+      print_error( f"Error: Prediction module ({args.prediction_module}) lacks the required function \"{args.footprint_prediction_function}\".")
       return exit_codes["prediction_module_error"]
-      # NOTE: This functionality is available, but need clean way of implementing this from the module side.
-      # "\nAlternatively, choose prediction function with --prediction_function <function name>."
 
-  # NOTE: This functionality is available, but need clean way of implementing this from the module side.
-  # Either point to modules get_prediction_function, or use specified function
-  # if args.prediction_function != None:
-  #   if args.prediction_function in module_dict:
-  #     prediction_function = module_dict[args.prediction_function]
-  #     prediction_function_name = args.prediction_function
-  #   else:
-  #     print( f"Error: Prediction module ({args.prediction_module}) lacks the specified prediction function {args.prediction_function}.\n")
-  #     return exit_codes["prediction_module_error"]
-  # elif "get_prediction_function" in module_dict:
-  #   prediction_function, prediction_function_name = prediction_module.get_prediction_function()
-  # else:
-    #   print( f"Error: Prediction module ({args.prediction_module}) lacks the required get_prediction_function() function.\nAlternatively, choose prediction function with --prediction_function <function name>.\n")
-  #   return exit_codes["prediction_module_error"]
+    if args.runtime_prediction_function in module_dict:
+      runtime_prediction_function = module_dict[args.runtime_prediction_function]
+    else:
+      print_error( f"Error: Prediction module ({args.prediction_module}) lacks the required function \"{args.runtime_prediction_function}\".")
+      return exit_codes["prediction_module_error"]
+
 
   # if the output is not explicitly defined use
   if args.output == None:
@@ -499,29 +523,41 @@ def main( argv=sys.argv ):
     parser.print_help(file=sys.stderr)
     return exit_codes["clobber_error"]
   except NoNamespaceImportLocationError as expt:
-    print_error( f"Error: {expt}" )
+    print_error( f"Error: during script parsing." )
+    print_error( expt )
     return exit_code["script_parse_error"]
 
   if not args.no_execute:
     # Execute file
     try:
       script_output = process_script( args.output, args.execution_arguments, args.tcl_shell, args.exact_command)
-    except Exception as e:
-      print_error( f"Error: Exception caught during scrip processing:\n{e}." )
+    except Exception as expt:
+      print_error( f"Error: Exception caught during scrip processing:" )
+      print_error( expt )
       return exit_codes["internal_error"]
 
     # Estimate memory footprint
     try:
-      predicted_footprint = predict( script_output, runtime_prediction_function, runtime_prediction_function_name, is_legal_footprint_prediction_value )
+      predicted_footprint = predict( script_output, footprint_prediction_function, is_legal_footprint_prediction_value )
     except InvalidPredictionValueError as expt:
-      print_error("Error: footprint prediction value is invalid.", expt)
+      print_error( f"Error: footprint prediction function ({args.footprint_prediction_function}) produced invalid value." )
+      print_error( expt )
+      return exit_codes["prediction_error"]
+    except PredictionFunctionException as expt:
+      print_error( f"Error: during execution of footprint prediction function ({args.footprint_prediction_function})" )
+      print_error( expt )
       return exit_codes["prediction_error"]
 
     # Estimate runtime
     try:
-      predicted_runtime = predict( script_output, runtime_prediction_function, runtime_prediction_function_name, is_legal_footprint_prediction_value )
+      predicted_runtime = predict( script_output, runtime_prediction_function, is_legal_runtime_prediction_value )
     except InvalidPredictionValueError as expt:
-      print_error("Error:", expt)
+      print_error( f"Error: runtime prediction function ({args.runtime_prediction_function}) produced invalid value." )
+      print_error( expt )
+      return exit_codes["prediction_error"]
+    except PredictionFunctionException as expt:
+      print_error( f"Error: during execution of runtime prediction function ({args.runtime_prediction_function})" )
+      print_error( expt )
       return exit_codes["prediction_error"]
 
     # create JSONified report and either print to stdout or write to file
