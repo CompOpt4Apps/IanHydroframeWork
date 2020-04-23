@@ -1,38 +1,14 @@
-# Running on Ocelote
+# Ocelote
+This document discusses some Ocelote specific details that are useful for users running on that system.
 
-
-## Running in a Script or in the Terminal
-
-Below is an example of running the hello world example on Ocelote.
-
-```bash
-module load unsupported
-module load mstrout/parflow/parflow-master-9c0b0f_amps-mpi
-./test_cases/hello_world.sh
-```
-
-TODO OUTPUT
-REMINDER FOR ME LATER
-```bash
-cat foo.txt
-<<OUTPUT
-Oh cool I can put output in this comment and it
-1. denotes that this is output
-2. is commented out so users can simply copy/paste this in
-OUTPUT
-```
-
-## Running PBS Scripts
-
-TODO COPY/MOVE PBS SECTION FROM Big_Test_Cases_Readme
-
-# Big Test Cases
-
-The "big" test cases can be found under `test_cases`.
-Their use is documented in `Big_Test_Cases_Readme.md`
+This mainly includes existing ParFlow modules available for use on Ocelote, how to build ParFlow from scratch on Ocelote, and other miscellaneous details relevant to working on Ocelote.
 
 # Using Alternative Prebuilt ParFlow Modules
 You can use any prebuilt ParFlow module you would like.
+
+Currently (as of 4.23.2020), there are several recommended modules:
+
+TODO TEST AND LIST ALL PARFLOW MODULES
 
 # Building ParFlow from Scratch
 
@@ -52,7 +28,7 @@ These instructions, and the configuration can be adapted to suite your particula
   - version: 3.15.2
   - module: mstrout/cmake/3.15.2
   - Notes:
-    * This is an 'unsupported' module, see section notes/unsupported for access
+    * This is an 'unsupported' module, see subsection Unsupported Modules for access.
 + openmpi:
   - version: gcc/1.10.2
   - module : openmpi/gcc/1.10.2
@@ -328,7 +304,7 @@ export LD_LIBRARY_PATH=${PARFLOW_INSTALL_DIRECTORY}/lib:${LD_LIBRARY_PATH}
 make test
 ```
 
-# Other notes
+# Other Notes
 
 ## Unsupported Modules
 "Unsupported" modules are modules that are not supported by the UA HPC staff.
@@ -336,3 +312,13 @@ They are modules that anyone can create.
 To enable using unsupported modules run:
 `module load unsupported`
 From here you can load any of the unsupported modules.
+
+## Cloning this Repository on Ocelote
+This repository is private on GitHub, and requires credentialed access to clone it using SSH.
+There are several guides on how to do this:
++ [UA HPC general GitHub authentication guide](https://public.confluence.arizona.edu/display/UAHPC/Transferring+Files#TransferringFiles-Github)
++ [GitHub guide to adding new ssh keys to GitHub ](https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account)
++ [GitHub guide to checking for existing ssh keys](https://help.github.com/en/github/authenticating-to-github/checking-for-existing-ssh-keys)
++ [GitHub guide to generating ssh keys ](https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
+
+Please read these carefully as the setup will not work unless done properly.
