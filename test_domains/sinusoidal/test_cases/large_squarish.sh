@@ -15,8 +15,8 @@
 NP=1
 NQ=1
 NR=1
-NX=10 #NX=4935
-NY=10 #NY=5000
+NX=4935
+NY=5000
 NZ=5
 NT=2
 size_string=${NX}x${NY}x${NZ}-${NT}_${NP}-${NQ}-${NR}
@@ -71,7 +71,7 @@ modules_array=(     )
 
 # Cheeky way of taking in modules_array via qsub -v,
 # without oppressive user-facing shenanigans.
-if [[ !-z ${modules_string+x} ]]
+if [[ ! -z ${modules_string+x} ]]
 then
   modules_array=(${modules_string})
 fi
@@ -98,7 +98,7 @@ then
     echo "This script will attempt to determine the path to the runscript"
 
     # Derive possible path from script invocation path
-    path_to_script_directory=${path_to_script_directory:-$(readlink -f $0 | sed "s|test_cases/$(basename $0)|scripts|g")}
+    path_to_script_directory=$(readlink -f $0 | sed "s|test_cases/$(basename $0)|scripts|g")
     # Check possible path
     if [[ ! -d ${path_to_script_directory} ]]
     then

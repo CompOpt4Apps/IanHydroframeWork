@@ -5,7 +5,7 @@
 #PBS -N hellow_world_pbs
 #PBS -W group_list=mstrout
 #PBS -l place=pack:exclhost
-#PBS -l walltime=1:00:00
+#PBS -l walltime=0:05:00
 #PBS -j oe
 
 #set number of cells
@@ -73,7 +73,7 @@ modules_array=(     )
 
 # Cheeky way of taking in modules_array via qsub -v,
 # without oppressive user-facing shenanigans.
-if [[ !-z ${modules_string+x} ]]
+if [[ ! -z ${modules_string+x} ]]
 then
   modules_array=(${modules_string})
 fi
@@ -100,7 +100,7 @@ then
     echo "This script will attempt to determine the path to the runscript"
 
     # Derive possible path from script invocation path
-    path_to_script_directory=${path_to_script_directory:-$(readlink -f $0 | sed "s|test_cases/$(basename $0)|scripts|g")}
+    path_to_script_directory=$(readlink -f $0 | sed "s|test_cases/$(basename $0)|scripts|g")
     # Check possible path
     if [[ ! -d ${path_to_script_directory} ]]
     then
