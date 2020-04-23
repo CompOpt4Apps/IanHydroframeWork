@@ -15,10 +15,11 @@
 NP=1
 NQ=1
 NR=1
-NX=4935
-NY=5000
+NX=5000
+NY=5223
 NZ=5
 NT=2
+
 size_string=${NX}x${NY}x${NZ}-${NT}_${NP}-${NQ}-${NR}
 test_name=ocelote_large_squarish_${size_string}
 
@@ -38,9 +39,10 @@ test_name=ocelote_large_squarish_${size_string}
 # path_to_script_directory is the absolute path to
 # the script directory containing run.sh
 # THIS IS MANDATORY
-#  Change the below string to the correct path ─────────────────────────────┐
-#                                                    ┌──────────────────────┴────────────────────┐
-path_to_script_directory=${path_to_script_directory:-"PUT THE PROPER SCRIPTS DIRECTORY PATH HERE!"}
+# Change the below string to the correct path.
+#                    └──────────────────────┐
+#                        ┌──────────────────┴────────────────────────┐
+path_to_script_directory="PUT THE PROPER SCRIPTS DIRECTORY PATH HERE"
 
 
 # Setting ParFlow installation
@@ -49,35 +51,32 @@ path_to_script_directory=${path_to_script_directory:-"PUT THE PROPER SCRIPTS DIR
 # First: PARFLOW_DIR
 # PARFLOW_DIR points to the installation of ParFlow, and contains the
 # bin, lib, and include directories.
-# Change the below string to the correct path  ─────────┐
-#                          ┌────────────────────────────┴────────┐
-PARFLOW_DIR=${PARFLOW_DIR:-"PUT THE PROPER PARFLOW_DIR PATH HERE!"}
+# Change the below string to the correct path.
+#                    └─────────┐
+#           ┌──────────────────┴──────────────────┐
+PARFLOW_DIR="PUT THE PROPER PARFLOW_DIR PATH HERE"
 
 # Second: module_array
 # module_array lists the modules to be loaded in order.
 # Spefify the modules that need to be loaded, in the order in which they need to be loaded,
 # separated by SPACES into the empty array below, between the parenthesis
 #                ┌────────────────────┘
-#                ▼
+#             ┌──▼──┐
 modules_array=(     )
 # Valid (as of 4.22.202) example on Ocelote:
 # modules_array=(unsupported mstrout/parflow/parflow-master-9c0b0f_amps-mpi)
 
 # And you're done!
+# You can set the debug variable to true and run with or without PBS to
+# test these setupt without actually running ParFlow
+enable_debug=false
 
 ################################################################################
 # Nothing below here should be changed unless you know what you're doing.
 ################################################################################
 
-# Cheeky way of taking in modules_array via qsub -v,
-# without oppressive user-facing shenanigans.
-if [[ ! -z ${modules_string+x} ]]
-then
-  modules_array=(${modules_string})
-fi
-
 # Check path_to_script_directory
-if [[ ${path_to_script_directory} == "PUT THE PROPER SCRIPTS DIRECTORY PATH HERE!" ]]
+if [[ ${path_to_script_directory} == "PUT THE PROPER SCRIPTS DIRECTORY PATH HERE" ]]
 then
   # Script being executed by PBS, no recourse for finding path_to_script_directory
   if [[ "$0" =~ "/pbs" ]]
@@ -112,8 +111,15 @@ then
   fi
 fi
 
+if [[ ! -e ${path_to_script_directory}/run.sh ]]
+then
+  echo "Cannot find run.sh in ${path_to_script_directory}"
+  echo "Is the path correct?"
+  exit
+fi
+
 # Check PARFLOW_DIR
-if [[ ${PARFLOW_DIR} != "PUT THE PROPER PARFLOW_DIR PATH HERE!" ]] && [[ ${PARFLOW_DIR} != "" ]]
+if [[ ${PARFLOW_DIR} != "PUT THE PROPER PARFLOW_DIR PATH HERE" ]] && [[ ${PARFLOW_DIR} != "" ]]
 then
   # Check PARFLOW_DIR is a directory
   if [[ ! -d ${PARFLOW_DIR} ]]
@@ -161,5 +167,10 @@ then
 fi
 
 # Execute run script
+cmd="${path_to_script_directory}/run.sh ${NP} ${NQ} ${NR} ${NX} ${NY} ${NZ} ${NT} ${test_name}"
 echo "Running: ${size_string}"
-${path_to_script_directory}/run.sh ${NP} ${NQ} ${NR} ${NX} ${NY} ${NZ} ${NT} ${test_name}
+echo ${cmd}
+if [[ "${enable_debug}" != "true" ]]
+then
+  eval ${cmd}
+fi
