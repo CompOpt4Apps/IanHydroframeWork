@@ -480,7 +480,7 @@ modules_array=(unsupported mstrout/parflow/parflow-master-9c0b0f_amps-mpi)
 ```
 This is (as of 4.22.202) valid on Ocelote.
 
-## Setting Sepecific PBS settings
+## Setting Specific PBS settings
 Each test case has default PBS settings that you may need to change.
 
 ### group_list
