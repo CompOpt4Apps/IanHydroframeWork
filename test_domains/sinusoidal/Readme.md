@@ -229,10 +229,75 @@ cat ./test_cases/hello_world.sh
 
 
 # TCL Script
+The tcl script `assets/sinusoida.tcl` is what sets up the ParFlow database and executes ParFlow.
+It can be used directly, but in larger processes (such performance data-collection) requires manual management of the output.
+This management is precisely why the run script exists.
 
 ## Example Using the TCL script
 
 ```bash
+# Make directory for collecting test outputs.
+# This is one of the things managed by the run script.
+mkdir manual_sinusoidal
+
+cd manual_sinusoidal
+
+# Just to show that there's nothing in here.
+ls
+################################################################################
+# BEGIN output from `ls`
+################################################################################
+################################################################################
+# END output from `ls`
+################################################################################
+
+test_name=hello_world
+
+#set number of cells
+number_cells_X=10
+number_cells_Y=100
+number_cells_Z=20
+
+# Run for 24 hours
+number_timesteps=24
+
+# 8 processes, making 4 partitions in the X dimension, and 2 in the Y.
+number_processes_X=4
+number_processes_Y=2
+number_processes_Z=1
+
+# Invoke tcl script
+#   Process topology, X Y Z
+#   Grid layout, X Y Z
+#   Timesteps
+#   Test Name
+tclsh ../assets/sinusoidal.tcl \
+  ${number_processes_X} ${number_processes_Y} ${number_processes_Z} \
+  ${number_cells_X}     ${number_cells_Y}     ${number_cells_Z} \
+  ${number_timesteps} \
+  ${test_name}
+
+# There is no output from.
+# Printing the results when the script has is also handled by the run script.
+# There is also now timing command output, though aspects of the
+# *timing.csv and *.out.log could make up for that, but are also present
+# anyway when using the run script.
+
+# But there are quite a few output
+ls
+################################################################################
+# BEGIN output from `ls`
+################################################################################
+# hello_world.out.kinsol.log
+# hello_world.out.log
+# hello_world.out.pfmetadata
+# hello_world.out.pftcl
+# hello_world.out.timing.csv
+# hello_world.out.txt
+# hello_world.pfidb
+################################################################################
+# END output from `ls`
+################################################################################
 
 ```
 
@@ -442,8 +507,9 @@ For example, running a setup Large Squarish domain.
 cd path/to/test_domains/sinusoidal
 
 # make a testing directory
-mkdir test_large_squarish_4.22.2020
-cd test_large_squarish_4.22.2020
+mkdir test_large_squarish
+cd test_large_squarish
+
 # Execute large squarish
 qsub ../test_cases/large_squarish.pbs
 ################################################################################
@@ -453,15 +519,120 @@ qsub ../test_cases/large_squarish.pbs
 ################################################################################
 # END output from `qsub ../test_cases/large_squarish.pbs`
 ################################################################################
+
 # Output from the test is stored in an output file named by the
 # PBS script name (-N) parameter and the job ID printed by the qsub command.
 cat large_squarish_ocelote_big_sinusoidal.o1234567
 ################################################################################
 # BEGIN output from `cat large_squarish_ocelote_big_sinusoidal.o1234567`
 ################################################################################
-# TODO OUTPUT
+# Currently Loaded Modulefiles:
+#  1) pbspro/19.2.4                                   
+#  2) gcc/6.1.0(default)                              
+#  3) unsupported/1.0                                 
+#  4) gcc/7.2.0                                       
+#  5) openmpi/gcc/1.10.2(default)                     
+#  6) python/2/2.7.14                                 
+#  7) hdf5_18/1.8.20                                  
+#  8) silo/4/4.10.2                                   
+#  9) hypre/2/2.9.0b                                  
+# 10) hdf5/1.8.18                                     
+# 11) mstrout/parflow/parflow-master-9c0b0f_amps-mpi  
+# /unsupported/mstrout/parflow/parflow-master-9c0b0f_amps-mpi/bin/parflow
+# Running: 5000x5223x5-2_1-1-1
+# ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/run.sh 1 1 1 5000 5223 5 2 ocelote_large_squarish_5000x5223x5-2_1-1-1
+# Run Name: ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43
+# Test Root Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/..
+# Output Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../outputs
+# Test Scripts Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../scripts
+# Test Files Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../assets
+# Run Output Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../outputs/ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43
+# ${HOME}/IanHydroframeWork/test_domains/sinusoidal/outputs/ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43
+# Running: /usr/bin/time -v tclsh sinusoidal.tcl 1 1 1 5000 5223 5 2 ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43
+#
+# 	Command being timed: "tclsh sinusoidal.tcl 1 1 1 5000 5223 5 2 ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43"
+# 	User time (seconds): 1811.67
+# 	System time (seconds): 166.89
+# 	Percent of CPU this job got: 99%
+# 	Elapsed (wall clock) time (h:mm:ss or m:ss): 33:01.81
+# 	Average shared text size (kbytes): 0
+# 	Average unshared data size (kbytes): 0
+# 	Average stack size (kbytes): 0
+# 	Average total size (kbytes): 0
+# 	Maximum resident set size (kbytes): 175495240
+# 	Average resident set size (kbytes): 0
+# 	Major (requiring I/O) page faults: 152
+# 	Minor (reclaiming a frame) page faults: 73049099
+# 	Voluntary context switches: 1716
+# 	Involuntary context switches: 203291
+# 	Swaps: 0
+# 	File system inputs: 81632
+# 	File system outputs: 208
+# 	Socket messages sent: 0
+# 	Socket messages received: 0
+# 	Signals delivered: 0
+# 	Page size (bytes): 4096
+# 	Exit status: 0
+# ===================================================
+# Output Log File
+# Node 0: Using process grid (1,1,1)
+# Node 0: Well Information
+# Node 0: No Wells.
+# Node 0: Well Information
+# Node 0: No Wells.
+# Node 0: Problem solved
+# ===================================================
+# Timing Log File
+# Timer,Time (s),MFLOPS (mops/s),FLOP (op)
+# Solver Setup,76.603600,0.000000,0
+# Solver,1874.891600,0.557152,1.0446e+09
+# Solver Cleanup,14.882000,0.000000,0
+# Matvec,0.000000,-nan,0
+# PFSB I/O,0.000000,-nan,0
+# PFB I/O,0.000000,-nan,0
+# CLM,0.000000,-nan,0
+# PFSOL Read,0.000000,-nan,0
+# Clustering,765.955500,0.000000,0
+# Permeability Face,0.000000,-nan,0
+# Godunov Advection,0.000000,-nan,0
+# Geometries,748.246200,0.000000,0
+# SubsrfSim,4.437700,0.000000,0
+# Porosity,0.300100,0.000000,0
+# PhaseRelPerm,75.565400,0.000000,2
+# PFMG,0.000000,-nan,0
+# HYPRE_Copies,0.000000,-nan,0
+# NL_F_Eval,229.889600,0.000000,2
+# KINSol,232.283800,4.497085,1.0446e+09
+# Total Runtime,1978.452600,-nan,0
+# ===================================================
+# Your group mstrout has been charged 15:25:24 (0:33:03 X 28 cpus).
+# You previously had 18284:28:26.  You now have 18269:03:02 of standard_time remaining
 ################################################################################
 # END output from `cat large_squarish_ocelote_big_sinusoidal.o1234567`
+################################################################################
+
+# The directory the test was run in, and where all of the output resides
+# is displayed in the output, shown by "Run Output Path: path/to/test_domains/sinusoidal/scripts/../outputs/<run name>_<timestamp>"
+# In this case the output directory is ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../outputs/ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43
+
+# Going into output directory
+cd ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../outputs/ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43
+
+# Show output files
+ls
+################################################################################
+# BEGIN output from `ls`
+################################################################################
+ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43.out.kinsol.log
+ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43.out.log
+ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43.out.pfmetadata
+ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43.out.pftcl
+ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43.out.timing.csv
+ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43.out.txt
+ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43.pfidb
+sinusoidal.tcl
+################################################################################
+# END output from `ls`
 ################################################################################
 ```
 
@@ -482,7 +653,7 @@ This example clones this repository to the home directory, creates a new test di
 This shows an example of running the Hello World PBS test case starting from scratch.
 Hello World PBS test case is shown here because it's usage is identical to the other PBS based test cases (unless otherwise noted).
 
-This example clones this repository to the home directory, creates a new test directory for managing test scripts and output, makes and edits a copy of `tests/hellow_world.pbs`, and spawns a PBS job for the edited script.
+This example clones this repository to the home directory, creates a new test directory for managing test scripts and output, makes and edits a copy of `tests/hello_world.pbs`, and spawns a PBS job for the edited script.
 In this case, we are using the `modules_array` method of specifying the ParFlow environment, and will use the `mstrout/parflow/parflow-master-9c0b0f_amps-mpi` module installed on Ocelote (which is part of the `unsupported` family of Ocelote modules).
 
 This case makes edits using `sed`, specifically because I don't know how to show making edits with `vim` in a code block example.
@@ -517,7 +688,7 @@ cd ${HOME}/IanHydroframeWork/test_domains/sinusoidal
 mkdir test_4.22.2020_full_run_hello_world_pbs
 
 # Copying the hello_world.pbs into my new test directory
-cp ./test_cases/hello_world.pbs test_4.22.2020_full_run_hello_world_pbs/hello_world_4.22.2020.pbs
+cp ./test_cases/hello_world.pbs test_4.22.2020_full_run_hello_world_pbs/my_hello_world.pbs
 
 # Going into my test directory
 cd test_4.22.2020_full_run_hello_world_pbs
@@ -525,14 +696,14 @@ cd test_4.22.2020_full_run_hello_world_pbs
 # Setting the path_to_script_directory to ${HOME}/IanHydroframeWork/test_domains/sinusoidal
 # I am using  sed, but the same can be accomplished with favorite text editor
 # and doing the same edit manually.
-sed "s|path_to_script_directory=\"PUT THE PROPER SCRIPTS DIRECTORY PATH HERE\"|path_to_script_directory=${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts # Changed path_to_script_directory here|g" --in-place ./hello_world_4.22.2020.pbs
+sed "s|path_to_script_directory=\"PUT THE PROPER SCRIPTS DIRECTORY PATH HERE\"|path_to_script_directory=${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts # Changed path_to_script_directory here|g" --in-place ./my_hello_world.pbs
 
 # Setting modules_array to (unsupported mstrout/parflow/parflow-master-9c0b0f_amps-mpi)
 # I'm changing modules_array because I want to use
 # the module mstrout/parflow/parflow-master-9c0b0f_amps-mpi
 # I am using  sed, but the same can be accomplished with favorite text editor
 # and doing the same edit manually.
-sed "s|modules_array=([[:space:]]*)|modules_array=(unsupported mstrout/parflow/parflow-master-9c0b0f_amps-mpi) # Changed modules_array here|g" --in-place ./hello_world_4.22.2020.pbs
+sed "s|modules_array=([[:space:]]*)|modules_array=(unsupported mstrout/parflow/parflow-master-9c0b0f_amps-mpi) # Changed modules_array here|g" --in-place ./my_hello_world.pbs
 
 # Because I am using modules_array to set my ParFlow installation,
 # I am NOT setting the PARFLOW_DIR variable.
@@ -540,12 +711,12 @@ sed "s|modules_array=([[:space:]]*)|modules_array=(unsupported mstrout/parflow/p
 # such as the one in ${HOME}/hydroframe/parflow/master/install,
 # I would do something like this. I am using  sed, but the same can be
 # accomplished with favorite text editor and doing the same edit manually.
-# sed "s|PARFLOW_DIR=\"PUT THE PROPER PARFLOW_DIR PATH HERE\"|PARFLOW_DIR=${HOME}/hydroframe/parflow/master/install # Changed PARFLOW_DIR here|g" --in-place ./hello_world_4.22.2020.pbs
+# sed "s|PARFLOW_DIR=\"PUT THE PROPER PARFLOW_DIR PATH HERE\"|PARFLOW_DIR=${HOME}/hydroframe/parflow/master/install # Changed PARFLOW_DIR here|g" --in-place ./my_hello_world.pbs
 
 # Showing the resulting script for completeness
-cat hello_world_4.22.2020.pbs
+cat my_hello_world.pbs
 ################################################################################
-# BEGIN output from `cat hello_world_4.22.2020.pbs`
+# BEGIN output from `cat my_hello_world.pbs`
 ################################################################################
 # #!/usr/bin/env bash
 # # Job will use 1 node, 28 cores, and 168gb of memory total.
@@ -553,8 +724,8 @@ cat hello_world_4.22.2020.pbs
 # #PBS -q standard
 # #PBS -N hello_world_pbs
 # #PBS -W group_list=mstrout
-# #PBS -l place=pack:exclhost
-# #PBS -l walltime=0:05:00
+# #PBS -l place=pack:shared
+# #PBS -l walltime=00:05:00
 # #PBS -j oe
 #
 # #set number of cells
@@ -592,7 +763,7 @@ cat hello_world_4.22.2020.pbs
 # # Change the below string to the correct path.
 # #                    └──────────────────────┐
 # #                        ┌──────────────────┴────────────────────────┐
-# path_to_script_directory=${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts # Changed path_to_script_directory here
+# path_to_script_directory=${HOME}/IanHydroframeWork_modules/test_domains/sinusoidal/scripts # Changed path_to_script_directory here
 #
 #
 # # Setting ParFlow installation
@@ -725,25 +896,25 @@ cat hello_world_4.22.2020.pbs
 #   eval ${cmd}
 # fi
 ################################################################################
-# END output from `cat hello_world_4.22.2020.pbs`
+# END output from `cat my_hello_world.pbs`
 ################################################################################
 
-qsub ./hello_world_4.22.2020.pbs
+qsub ./my_hello_world.pbs
 ################################################################################
-# BEGIN output from `qsub ./hello_world_4.22.2020.pbs`
+# BEGIN output from `qsub ./my_hello_world.pbs`
 ################################################################################
 # 3161983.head1.cm.cluster
 ################################################################################
-# END output from `qsub ./hello_world_4.22.2020.pbs`
+# END output from `qsub ./my_hello_world.pbs`
 ################################################################################
 
 # Now we have to wait for this job to complete.
 # Should be quick, but getting through the queue can take some time.
 
 # Once the job is complete, we can view its output.
-cat hellow_world_pbs.o3161983
+cat hello_world_pbs.o3161983
 ################################################################################
-# BEGIN output from `cat hellow_world_pbs.o3161964`
+# BEGIN output from `cat hello_world_pbs.o3161983`
 ################################################################################
 # Currently Loaded Modulefiles:
 #  1) pbspro/19.2.4                                   
@@ -759,33 +930,33 @@ cat hellow_world_pbs.o3161983
 # 11) mstrout/parflow/parflow-master-9c0b0f_amps-mpi  
 # /unsupported/mstrout/parflow/parflow-master-9c0b0f_amps-mpi/bin/parflow
 # Running: 100x200x10-24_4-2-1
-# ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/run.sh 4 2 1 100 200 10 24 hellow_world_pbs_100x200x10-24_4-2-1
-# Run Name: hellow_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47
+# ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/run.sh 4 2 1 100 200 10 24 hello_world_pbs_100x200x10-24_4-2-1
+# Run Name: hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_14:30:43
 # Test Root Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/..
 # Output Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../outputs
 # Test Scripts Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../scripts
 # Test Files Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../assets
-# Run Output Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../outputs/hellow_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47
-# ${HOME}/IanHydroframeWork/test_domains/sinusoidal/outputs/hellow_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47
-# Running: /usr/bin/time -v tclsh sinusoidal.tcl 4 2 1 100 200 10 24 hellow_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47
+# Run Output Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../outputs/hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_14:30:43
+# ${HOME}/IanHydroframeWork/test_domains/sinusoidal/outputs/hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_14:30:43
+# Running: /usr/bin/time -v tclsh sinusoidal.tcl 4 2 1 100 200 10 24 hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_14:30:43
 #
-# 	Command being timed: "tclsh sinusoidal.tcl 4 2 1 100 200 10 24 hellow_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47"
-# 	User time (seconds): 8.67
-# 	System time (seconds): 0.83
-# 	Percent of CPU this job got: 582%
-# 	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:01.63
+# 	Command being timed: "tclsh sinusoidal.tcl 4 2 1 100 200 10 24 hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_14:30:43"
+# 	User time (seconds): 10.27
+# 	System time (seconds): 0.90
+# 	Percent of CPU this job got: 426%
+# 	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:02.62
 # 	Average shared text size (kbytes): 0
 # 	Average unshared data size (kbytes): 0
 # 	Average stack size (kbytes): 0
 # 	Average total size (kbytes): 0
-# 	Maximum resident set size (kbytes): 48348
+# 	Maximum resident set size (kbytes): 48344
 # 	Average resident set size (kbytes): 0
-# 	Major (requiring I/O) page faults: 61
-# 	Minor (reclaiming a frame) page faults: 191668
-# 	Voluntary context switches: 4212
-# 	Involuntary context switches: 213
+# 	Major (requiring I/O) page faults: 348
+# 	Minor (reclaiming a frame) page faults: 186882
+# 	Voluntary context switches: 6171
+# 	Involuntary context switches: 417
 # 	Swaps: 0
-# 	File system inputs: 32
+# 	File system inputs: 49224
 # 	File system outputs: 7824
 # 	Socket messages sent: 0
 # 	Socket messages received: 0
@@ -803,50 +974,50 @@ cat hellow_world_pbs.o3161983
 # ===================================================
 # Timing Log File
 # Timer,Time (s),MFLOPS (mops/s),FLOP (op)
-# Solver Setup,0.076800,0.000000,0
-# Solver,0.982200,19.547978,1.92e+07
-# Solver Cleanup,0.005600,0.000000,0
+# Solver Setup,0.155900,0.000000,0
+# Solver,1.140700,16.831791,1.92e+07
+# Solver Cleanup,0.007000,0.000000,0
 # Matvec,0.000000,-nan,0
 # PFSB I/O,0.000000,-nan,0
 # PFB I/O,0.000000,-nan,0
-# CLM,0.001600,0.000000,0
+# CLM,0.006700,0.000000,0
 # PFSOL Read,0.000000,-nan,0
-# Clustering,0.227400,0.000000,0
+# Clustering,0.342900,0.000000,0
 # Permeability Face,0.000000,-nan,0
 # Godunov Advection,0.000000,-nan,0
-# Geometries,0.125300,0.000000,0
-# SubsrfSim,0.001700,0.000000,0
+# Geometries,0.256800,0.000000,0
+# SubsrfSim,0.002100,0.000000,0
 # Porosity,0.000100,0.000000,0
-# PhaseRelPerm,0.198200,0.000121,24
+# PhaseRelPerm,0.190900,0.000126,24
 # PFMG,0.000000,-nan,0
 # HYPRE_Copies,0.000000,-nan,0
-# NL_F_Eval,0.596600,0.000040,24
-# KINSol,0.604200,31.777597,1.92e+07
-# Total Runtime,1.075300,-nan,0
+# NL_F_Eval,0.587100,0.000041,24
+# KINSol,0.598800,32.064168,1.92e+07
+# Total Runtime,1.315500,-nan,0
 # ===================================================
 ################################################################################
-# END output from `cat hellow_world_pbs.o3161964`
+# END output from `cat hello_world_pbs.o3161983`
 ################################################################################
 
 # The directory the test was run in, and where all of the output resides
 # is displayed in the output, shown by "Run Output Path: path/to/test_domains/sinusoidal/scripts/../outputs/<run name>_<timestamp>"
-# In this case the output directory is ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../outputs/hellow_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47
+# In this case the output directory is ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../outputs/hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47
 
 # Going into output directory
-cd ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../outputs/hellow_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47
+cd ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../outputs/hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_14:30:43
 
 # Show output files
 ls
 ################################################################################
 # BEGIN output from `ls`
 ################################################################################
-hellow_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47.out.kinsol.log
-hellow_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47.out.log
-hellow_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47.out.pfmetadata
-hellow_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47.out.pftcl
-hellow_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47.out.timing.csv
-hellow_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47.out.txt
-hellow_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_13:24:47.pfidb
+hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_14:30:43.out.kinsol.log
+hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_14:30:43.out.log
+hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_14:30:43.out.pfmetadata
+hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_14:30:43.out.pftcl
+hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_14:30:43.out.timing.csv
+hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_14:30:43.out.txt
+hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_14:30:43.pfidb
 sinusoidal.tcl
 ################################################################################
 # END output from `ls`
