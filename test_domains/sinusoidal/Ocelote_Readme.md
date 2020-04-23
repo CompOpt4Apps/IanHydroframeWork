@@ -1,24 +1,35 @@
 # Running on Ocelote
 
-Below is an example script that should work with no additional fiddling.
-This example runs a 100x10x5 domain for 2 time-steps on 2 processes (process topology (2,1,1))
+
+## Running in a Script or in the Terminal
+
+Below is an example of running the hello world example on Ocelote.
 
 ```bash
 module load unsupported
 module load mstrout/parflow/parflow-master-9c0b0f_amps-mpi
-
-NX=100
-NY=10
-NZ=5
-
-NT=2
-
-NPX=2
-NPY=1
-NPZ=1
-
-./scripts/run.sh ${NPX} ${NPY} ${NPZ} ${NX} ${NY} ${NZ} ${NT}
+./test_cases/hello_world.sh
 ```
+
+TODO OUTPUT
+REMINDER FOR ME LATER
+```bash
+cat foo.txt
+<<OUTPUT
+Oh cool I can put output in this comment and it
+1. denotes that this is output
+2. is commented out so users can simply copy/paste this in
+OUTPUT
+```
+
+## Running PBS Scripts
+
+TODO COPY/MOVE PBS SECTION FROM Big_Test_Cases_Readme
+
+# Big Test Cases
+
+The "big" test cases can be found under `test_cases`.
+Their use is documented in `Big_Test_Cases_Readme.md`
 
 # Using Alternative Prebuilt ParFlow Modules
 You can use any prebuilt ParFlow module you would like.
