@@ -742,7 +742,7 @@ cat my_hello_world.pbs
 # NR=1
 #
 # size_string=${NX}x${NY}x${NZ}-${NT}_${NP}-${NQ}-${NR}
-# test_name=hellow_world_pbs_${size_string}
+# test_name=hello_world_pbs_${size_string}
 #
 # #▉    ▉  ▉▉▉▉▉▉   ▉   ▉           ▉   ▉   ▉▉▉▉   ▉    ▉      ▉▉▉▉▉▉▉
 # #▉    ▉  ▉         ▉ ▉             ▉ ▉   ▉    ▉  ▉    ▉       ▉▉▉▉▉
