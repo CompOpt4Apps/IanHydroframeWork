@@ -1,15 +1,24 @@
 # Sinusoidal Test Case
-Sinusoidal is a test case for exploring performance across arbitrary
-domain sizes.
+Sinusoidal is a ParFlow test case for exploring performance across parameterized domain
+sizes.  The tcl script for this test case is parameterized by the name of the test,
+the number of X, Y, and Z cells, the number of simulated time steps in hours, and the 
+number of processors that should evenly partition the work in each of the X, Y, and Z directions.
 This test case was adapted from the pfp4 test case from Stefan Kollet, and
-was described as a weak scaling with periodic boundary condition.
+was described as a weak scaling with periodic boundary conditions.
 
-This includes both a nice runner script (`./scripts/run.sh`) which manages inputs/outputs and invocation of the test, as well as the underlying tcl script (`./assets/sinusoidal.tcl`) which performs the actual ParFlow execution.
-Using the runner script is preferred.
+Since using the tcl script involves setting all of the parameters as environment variables,
+there is a `sinusoidal-run.sh` script that takes each of the parameters as command-line
+parameters, sets up the environment variables, and runs the tcl script, which performs the
+actual ParFlow execution.
+
+FIXME: Ian, please rename the run script to sinuisoidal-run.sh.
+
+FIXME: please put a couple of sentences here about the big test case and how to run it so that
+it is in the first screenful people see.
 
 For comprehensive documentation, see Manual.md and Ocelote_Readme.md (if using Ocelote or similar HPC system).
 
-# Example Usage
+# Example Usage with just the tcl script
 Below is an example of executing the tcl script in Bash.
 ```bash
 # Make directory for collecting test outputs.
@@ -68,10 +77,14 @@ ls
 
 ```
 
-# TCL Script
-The tcl script `assets/sinusoida.tcl` is what sets up the ParFlow database and executes ParFlow.
-It can be used directly, but in larger processes (such performance data-collection) requires manual management of the output.
-This management is precisely why the run script exists.
+# TCL Script `sinusoidal-run.sh`
+The tcl script `assets/sinusoidal.tcl` is what sets up the ParFlow database and executes ParFlow.
+It can be used directly, but in larger processes (such performance data-collection) requires manual management 
+of the output.
+
+FIXME: why is sinuisoidal.tcl in a subdirectory?  Why not just in sinusoidal?
+
+FIXME: show how to use sinusoidal-run.sh instead of having to do the above setup for tcl
 
 ## Script Arguments
 Both the bash run-script and the tcl test scrip accepts the following parameters in this order:
@@ -95,7 +108,8 @@ Both the bash run-script and the tcl test scrip accepts the following parameters
   - This becomes part of a path so do not used spaces or special characters other than any of the following: : - _ .
 
 ^For the process topology, the total number of processes executing is the
-product of the processes in each dimension (i.e. for *any* topolgy using any permutation of 2, 3, and 4, the total number of processes is 24 (2 x 3 x 4))
+product of the processes in each dimension (i.e. for *any* topolgy using any permutation of 2, 3, and 4, 
+the total number of processes is 24 (2 x 3 x 4))
 
 # Specific Parameter-Sets of Interest
 There are several specific test cases using the sinusoidal domain.
@@ -118,10 +132,13 @@ It was designed for running on the UArizona HPC system Ocelote.
   + Memory Occupation: (162.76 GiB) 170666612 KiB
   + Runtime:  0:33:22.57 (2002.57 seconds)
 
+FIXME: for the rest of the file, whenever possible make the text fit in <80 columns.  It isn't always possible
+when there are URLs, but should happen everywhere else.
 
 ### Background
 This test case has parameters chosen such that a test fills the memory of a standard, non-GPU node.
-The configuration of Ocelote nodes can be found [here](https://public.confluence.arizona.edu/display/UAHPC/Compute+Resources) ([archived 4.22.2020](https://web.archive.org/web/20200423043707/https://public.confluence.arizona.edu/display/UAHPC/Compute+Resources)).
+The configuration of Ocelote nodes can be found [here](https://public.confluence.arizona.edu/display/UAHPC/Compute+Resources) 
+([archived 4.22.2020](https://web.archive.org/web/20200423043707/https://public.confluence.arizona.edu/display/UAHPC/Compute+Resources)).
 While Ocelote nodes have 192 GB of RAM, the recommended maximum memory allocation is only 168 GB because "We use 6GB per core as a round number memory resource.  Multiplied by the core count of 28 gives 168GB.  The difference will be used by the operating system for file handling to make your jobs more efficient." ([reference](https://public.confluence.arizona.edu/display/UAHPC/Running+Jobs))) ([archived 4.22.2020](https://web.archive.org/web/20200423044116/https://public.confluence.arizona.edu/display/UAHPC/Running+Jobs)).
 Thus these test cases are designed to fill as much of the 168GB of memory as possible.
 
