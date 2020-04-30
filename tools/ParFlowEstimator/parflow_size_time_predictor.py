@@ -405,11 +405,13 @@ def main( argv=sys.argv ):
     estimation = dict(
       footprint = dict(
         value = "float",
-        unit = "string"
+        unit = "string",
+        error_bound = "float"
       ),
       runtime = dict(
         value = "float",
-        unit = "string"
+        unit = "string",
+        error_bound = "float"
       )
     )
   )]

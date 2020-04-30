@@ -1,36 +1,37 @@
 import math
 
 def module_default_footprint_prediction_function( NX, NY, NZ, timesteps, number_processes_X, number_processes_Y, number_processes_Z ):
-  return predict_footprint_from_size( NX, NY, NZ )
+  return predict_footprint_from_size( NX, NY, NZ, timesteps )
 
 def module_default_runtime_prediction_function( NX, NY, NZ, timesteps, number_processes_X, number_processes_Y, number_processes_Z ):
   return predict_runtime_from_size_and_timesteps( NX, NY, NZ, timesteps )
 
-
-def alt_footprint_prediction_function( NX, NY, NZ, timesteps, number_processes_X, number_processes_Y, number_processes_Z ):
+def predict_footprint_from_size( NX, NY, NZ, timesteps):
+  nx, ny, nz = NX, NY, NZ
+  prediction =  0.00816995598709359*nx**2 \
+              + 6.69251873916153*nx*ny    \
+              - 25.2516520661043*nx       \
+              + 0.00041536449776633*ny**2 \
+              + 61.8637631577788*ny       \
+              + 30486.0155720958
   return dict(
-    value=predict_footprint_from_size( NX, NY, NZ ),
-    unit="kilobyte"
-  )
-
-def alt_runtime_prediction_function( NX, NY, NZ, timesteps, number_processes_X, number_processes_Y, number_processes_Z ):
-  return dict(
-    value=predict_runtime_from_size_and_timesteps( NX, NY, NZ, timesteps ),
-    unit="second"
-  )
-
-def predict_footprint_from_size( NX, NY, NZ ):
-  return dict(
-    #TODO: Replace with more accurate model
-    #NOTE: Currently this model returns invalid (negative) values for small domains.
-    value=max( 0, -303000.3309 + NX*806.6720 + NY*815.8475 + NX*NY*4.8494  +  (NX**2)*-0.0178 + (NY**2)*-0.0154 ),
+    value=max( 0.0, prediction ),
+    error_bound=170786.46950405478,
     unit="kilobyte"
   )
 
 def predict_runtime_from_size_and_timesteps( NX, NY, NZ, timesteps ):
+  nx, ny, nz = NX, NY, NZ
+  prediction =   6.89426918589472e-6*nx**2 \
+               + 8.89970972641197e-5*nx*ny \
+               - 0.0416086434219884*nx     \
+               + 8.56467620796192e-6*ny**2 \
+               - 0.0448171870718721*ny     \
+               + 23.545234649138
   return dict(
     #TODO: Replace with accurate model.
     #NOTE: Below model is for code testing purposes only.
-    value=.000001*NX*NY*NZ*timesteps,
+    value=max( 0.0, prediction ),
+    error_bound=47.95722951718799,
     unit="second"
   )
