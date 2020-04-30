@@ -23,7 +23,7 @@ path_to_scripts=${path_to_scripts:-$(readlink -f $0 | sed "s|test_cases/$(basena
 #   Grid layout, X Y Z
 #   Timesteps
 #   Test Name
-${path_to_scripts}/run.sh \
+${path_to_scripts}/sinusoidal-run.sh \
   ${number_processes_X} ${number_processes_Y} ${number_processes_Z} \
   ${number_cells_X}     ${number_cells_Y}     ${number_cells_Z} \
   ${number_timesteps} \

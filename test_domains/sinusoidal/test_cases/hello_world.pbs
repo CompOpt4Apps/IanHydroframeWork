@@ -38,7 +38,7 @@ test_name=hello_world_pbs_${size_string}
 # Setting the Path to Script Directory
 #
 # path_to_script_directory is the absolute path to
-# the script directory containing run.sh
+# the script directory containing sinusoidal-run.sh
 # THIS IS MANDATORY
 # Change the below string to the correct path.
 #                    └──────────────────────┐
@@ -112,9 +112,9 @@ then
   fi
 fi
 
-if [[ ! -e ${path_to_script_directory}/run.sh ]]
+if [[ ! -e ${path_to_script_directory}/sinusoidal-run.sh ]]
 then
-  echo "Cannot find run.sh in ${path_to_script_directory}"
+  echo "Cannot find sinusoidal-run.sh in ${path_to_script_directory}"
   echo "Is the path correct?"
   exit
 fi
@@ -168,7 +168,7 @@ then
 fi
 
 # Execute run script
-cmd="${path_to_script_directory}/run.sh ${NP} ${NQ} ${NR} ${NX} ${NY} ${NZ} ${NT} ${test_name}"
+cmd="${path_to_script_directory}/sinusoidal-run.sh ${NP} ${NQ} ${NR} ${NX} ${NY} ${NZ} ${NT} ${test_name}"
 echo "Running: ${size_string}"
 echo ${cmd}
 if [[ "${enable_debug}" != "true" ]]

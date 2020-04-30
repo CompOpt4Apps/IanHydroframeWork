@@ -4,7 +4,7 @@ domain sizes.
 This test case was adapted from the pfp4 test case from Stefan Kollet, and
 was described as a weak scaling with periodic boundary condition.
 
-This includes both a nice runner script (`./scripts/run.sh`) which manages inputs/outputs and invocation of the test, as well as the underlying tcl script (`./assets/sinusoidal.tcl`) which performs the actual ParFlow execution.
+This includes both a nice runner script (`./scripts/sinusoidal-run.sh`) which manages inputs/outputs and invocation of the test, as well as the underlying tcl script (`./assets/sinusoidal.tcl`) which performs the actual ParFlow execution.
 Using the runner script is preferred.
 
 By default, the runner script test prints out the ParFlow standard output, and timing information from `/usr/bin/time` and ParFlow's internal timing system (if it has been built with timing configured to on, see section on building ParFlow).
@@ -51,7 +51,7 @@ echo "Hello World! This ends up as output on the terminal, and will be put into 
 ```
 
 # Run Script
-The run script (`scripts/run.sh`) is the preferred method of running the sinusoidal domain.
+The run script (`scripts/sinusoidal-run.sh`) is the preferred method of running the sinusoidal domain.
 The run script manages running the underlying sinudoidal tcl script (described in another section), the output files, timeing, and printing of results.
 
 By default, the runner script test prints out the ParFlow standard output, and timing information from `/usr/bin/time` and ParFlow's internal timing system (if it has been built with timing configured to on, see section on building ParFlow).
@@ -145,7 +145,7 @@ cat ./test_cases/hello_world.sh
 # #   Grid layout, X Y Z
 # #   Timesteps
 # #   Test Name
-# ${path_to_scripts}/run.sh \
+# ${path_to_scripts}/sinusoidal-run.sh \
 #   ${number_processes_X} ${number_processes_Y} ${number_processes_Z} \
 #   ${number_cells_X}     ${number_cells_Y}     ${number_cells_Z} \
 #   ${number_timesteps} \
@@ -540,7 +540,7 @@ cat large_squarish_ocelote_big_sinusoidal.o1234567
 # 11) mstrout/parflow/parflow-master-9c0b0f_amps-mpi  
 # /unsupported/mstrout/parflow/parflow-master-9c0b0f_amps-mpi/bin/parflow
 # Running: 5000x5223x5-2_1-1-1
-# ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/run.sh 1 1 1 5000 5223 5 2 ocelote_large_squarish_5000x5223x5-2_1-1-1
+# ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/sinusoidal-run.sh 1 1 1 5000 5223 5 2 ocelote_large_squarish_5000x5223x5-2_1-1-1
 # Run Name: ocelote_large_squarish_5000x5223x5-2_1-1-1_proc-1-1-1_size-5000x5223x5_time-2_04-22_14:30:43
 # Test Root Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/..
 # Output Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../outputs
@@ -758,7 +758,7 @@ cat my_hello_world.pbs
 # # Setting the Path to Script Directory
 # #
 # # path_to_script_directory is the absolute path to
-# # the script directory containing run.sh
+# # the script directory containing sinusoidal-run.sh
 # # THIS IS MANDATORY
 # # Change the below string to the correct path.
 # #                    └──────────────────────┐
@@ -832,9 +832,9 @@ cat my_hello_world.pbs
 #   fi
 # fi
 #
-# if [[ ! -e ${path_to_script_directory}/run.sh ]]
+# if [[ ! -e ${path_to_script_directory}/sinusoidal-run.sh ]]
 # then
-#   echo "Cannot find run.sh in ${path_to_script_directory}"
+#   echo "Cannot find sinusoidal-run.sh in ${path_to_script_directory}"
 #   echo "Is the path correct?"
 #   exit
 # fi
@@ -888,7 +888,7 @@ cat my_hello_world.pbs
 # fi
 #
 # # Execute run script
-# cmd="${path_to_script_directory}/run.sh ${NP} ${NQ} ${NR} ${NX} ${NY} ${NZ} ${NT} ${test_name}"
+# cmd="${path_to_script_directory}/sinusoidal-run.sh ${NP} ${NQ} ${NR} ${NX} ${NY} ${NZ} ${NT} ${test_name}"
 # echo "Running: ${size_string}"
 # echo ${cmd}
 # if [[ "${enable_debug}" != "true" ]]
@@ -930,7 +930,7 @@ cat hello_world_pbs.o3161983
 # 11) mstrout/parflow/parflow-master-9c0b0f_amps-mpi  
 # /unsupported/mstrout/parflow/parflow-master-9c0b0f_amps-mpi/bin/parflow
 # Running: 100x200x10-24_4-2-1
-# ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/run.sh 4 2 1 100 200 10 24 hello_world_pbs_100x200x10-24_4-2-1
+# ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/sinusoidal-run.sh 4 2 1 100 200 10 24 hello_world_pbs_100x200x10-24_4-2-1
 # Run Name: hello_world_pbs_100x200x10-24_4-2-1_proc-4-2-1_size-100x200x10_time-24_04-22_14:30:43
 # Test Root Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/..
 # Output Path: ${HOME}/IanHydroframeWork/test_domains/sinusoidal/scripts/../outputs
