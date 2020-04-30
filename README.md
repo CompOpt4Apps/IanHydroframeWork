@@ -3,15 +3,18 @@
 This repository contains several ongoing projects.
 
 # Sinusoidal Test Domain
-This is a synthetic, rectilinear test domain that is parameterized for size (among others), allowing size-scaling performance testing with ease.
+This is a synthetic, rectilinear test domain that is parameterized for size (among others), allowing size-scaling 
+performance testing.
 
 See `test_domains/sinusoidal/Readme.md` for details.
 
 
 # Large Ocelote Sinusoidal Test
-This test is a set of parameters to the Sinusoidal test domain that achieves a 96.88% occupation of the 168GiB of memory available on a node in the UArizona HPC system, Ocelote.
+This test is a set of parameters to the Sinusoidal test domain that achieves a 96.88% occupation of the 168GiB of 
+memory available on a node in the UArizona HPC system, Ocelote.
 
-See `test_domains/sinusoidal/Readme.md`, "Large Squarish" subsection (under section "Specific Parameter-Sets of Interest") for details.
+See `test_domains/sinusoidal/Readme.md`, "Large Squarish" subsection (under section "Specific Parameter-Sets of Interest") 
+for details.
 
 
 # ParFlow Estimator Tool
