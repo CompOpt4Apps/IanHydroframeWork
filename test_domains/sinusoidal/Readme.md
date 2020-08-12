@@ -1,3 +1,7 @@
+# NOTE!
+This test case has been subersceeded by the fixed size Sinusoidal test cases in
+https://github.com/hydroframe/ParflowPerformanceTesting
+
 # Sinusoidal Test Case
 Sinusoidal is a ParFlow test case for exploring performance across parameterized
 domain sizes.  
@@ -14,7 +18,7 @@ parameters as command-line parameters, sets up the environment variables,
 and runs the tcl script, which performs the actual ParFlow execution.
 
 This test domain also includes test cases with parameters chosen to explore
-large domain performance on HPC systems (see the Large Squarish test case).
+large domain performance on HPC systems (see the Squarish test cases).
 
 For comprehensive documentation, see Manual.md and Ocelote_Readme.md (if
 Ocelote or similar HPC system).
@@ -270,13 +274,13 @@ ls
 # Specific Parameter-Sets of Interest
 There are several specific test cases using the sinusoidal domain.
 
-## Large Squarish
+## Ocelote 95% Squarish
 This test cases is designed to have a peak memory footprint near 168GB.
 This test case has NX and NY parameters that are roughly equal
 (4.27% off-square).
 It was designed for running on the UArizona HPC system Ocelote.
 
-* File: `test_cases/large_squarish.pbs`
+* File: `test_cases/squarish_ocelote_95.pbs`
 * Sinusoidal Parameters:
   + Number Processes X: 1
   + Number Processes Y: 1
@@ -286,7 +290,7 @@ It was designed for running on the UArizona HPC system Ocelote.
   + Number Cells Z: 5
   + Number Timesteps: 2
 * Observed metrics:
-  + Memory Occupation: (162.76 GiB) 170666612 KiB
+  + Memory Occupation: 169911532 KiB (162.04 GiB) (94.1919%)
   + Runtime:  0:33:22.57 (2002.57 seconds)
 
 

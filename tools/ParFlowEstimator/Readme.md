@@ -1,3 +1,13 @@
+# NOTE:
+Performance and Workflow team need to find the direction they want to go into
+before this should even be looked at again.
+
+A few changes I would now that pfmetadata files are emitted by the run:
+1. Parse emitted pfmetadata files (its just bad json) instead of attempting
+   to synthesize and run TCL.
+   I guess this still requires automatic modification of the TCL script to remove
+   calls to `run` but whatever.
+
 # ParFlow Run-Time and Memory Footprint Estimator
 This tool estimates the run-time and memory footprint of a ParFlow test script.
 The output is a report (in JSON format) of the script's configuration used in the estimation, and the results of that estimation.

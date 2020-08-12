@@ -376,20 +376,32 @@ Unless otherwise mentioned, all PBS test cases are run in the same way this test
   + Both stdout and stderr to same file
     - `-j oe`
 
-## Large Squarish
+## Large Test cases
 This test cases is designed to have a peak memory footprint near 168GB.
+Several are provided, for the following percentages of memory occupations:
+- ~95%
+- ~80%
+- ~75%
+- ~50%
+
+Each test case, its sinusoidal parameters, and observed runtime and
+memory occupations are listed in the subsections below.
+
+### Squarish Ocelote 95% Occupation
 This test case has NX and NY parameters that are roughly equal (4.27% off-square).
 It was designed for running on the UArizona HPC system Ocelote.
-
-* File: `test_cases/large_squarish.pbs`
+* File: `test_cases/squarish_ocelote_95.pbs`
 * Sinusoidal Parameters:
-  + NP: 1
-  + NQ: 1
-  + NR: 1
-  + NX: 5000
-  + NY: 5223
-  + NZ: 5
-  + NT: 2
+  + Number Processes X: 1
+  + Number Processes Y: 1
+  + Number Processes Z: 1
+  + Number Cells X: 5000
+  + Number Cells Y: 5223
+  + Number Cells Z: 5
+  + Number Timesteps: 2
+* Observed metrics:
+  + Memory Occupation: 169911532 KiB (162.04 GiB) (94.1919%)
+  + Runtime:  0:33:22.57 (2002.57 seconds)
 * PBS Settings:
   + 1 Node, 28 CPUs, 6GB/core, 168GB memory total.
     - `-l select=1:ncpus=28:mem=168gb:pcmem=6gb`
@@ -405,34 +417,43 @@ It was designed for running on the UArizona HPC system Ocelote.
     - `-l walltime=1:00:00`
   + Both stdout and stderr to same file
     - `-j oe`
-* Observed metrics:
-  + Memory Occupation: 170666612 KB
-  + Runtime: 2002.57 seconds
-
 
 ### Background
-This test case has parameters chosen such that a test fills the memory of a standard, non-GPU node.
-The configuration of Ocelote nodes can be found [here](https://public.confluence.arizona.edu/display/UAHPC/Compute+Resources) ([archived 4.22.2020](https://web.archive.org/web/20200423043707/https://public.confluence.arizona.edu/display/UAHPC/Compute+Resources)).
-While Ocelote nodes have 192 GB of RAM, the recommended maximum memory allocation is only 168 GB because "We use 6GB per core as a round number memory resource.  Multiplied by the core count of 28 gives 168GB.  The difference will be used by the operating system for file handling to make your jobs more efficient." ([reference](https://public.confluence.arizona.edu/display/UAHPC/Running+Jobs))) ([archived 4.22.2020](https://web.archive.org/web/20200423044116/https://public.confluence.arizona.edu/display/UAHPC/Running+Jobs)).
-Thus these test cases are designed to fill as much of the 168GB of memory as possible.
+These test cases have parameters chosen such that a test fills a significant
+amount of the memory of a standard, non-GPU node in the Ocelote system.
+The configuration of Ocelote nodes can be found [here](https://public.confluence.arizona.edu/display/UAHPC/Compute+Resources)
+([archived 4.22.2020](https://web.archive.org/web/20200423043707/https://public.confluence.arizona.edu/display/UAHPC/Compute+Resources)).
+While Ocelote nodes have 192 GB of RAM, the recommended maximum memory allocation is only 168 GB because "We use 6GB per core as a round number memory resource.  
+Multiplied by the core count of 28 gives 168GB.  
+The difference will be used by the operating system for file handling to make your jobs more efficient."
+([reference](https://public.confluence.arizona.edu/display/UAHPC/Running+Jobs)))
+([archived 4.22.2020](https://web.archive.org/web/20200423044116/https://public.confluence.arizona.edu/display/UAHPC/Running+Jobs)).
+Thus these test cases are designed to fill a portion of the 168GB of memory.
 
-The amount of memory is measured with `/usr/bin/time -v` in the run script, from the entry "Maximum resident set size (kbytes)".
+The amount of memory is measured with `/usr/bin/time -v` in the run script,
+from the entry "Maximum resident set size (kbytes)".
 This method is limited in two ways:
-1. It can only measure memory usage at the resolution of a whole virtual memory page (4096 bytes on Ocelote, as with most Linux systems).
-2. It can only measure memory usage of a single executable, making true memory measurements of multi-process programs (i.e. MPI programs) impossible.
+1. It can only measure memory usage at the resolution of a whole virtual
+   memory page (4096 bytes on Ocelote, as with most Linux systems).
+2. It can only measure memory usage of a single executable, making true
+   memory measurements of multi-process programs (i.e. MPI programs) impossible.
 
 We deal with this in two ways:
 1. We are not interested in sub-megabyte memory measurement resolution.
 2. We only perform memory measurements on single-process executions of ParFlow.
 
-Currently (4.23.2020) there are discussions about the accuracy of measuring memory [[#2]](https://github.com/CompOpt4Apps/IanHydroframeWork/issues/2) and alternative methods that include the ability to measure the memory of multi-process ParFlow executions [[#7]](https://github.com/CompOpt4Apps/IanHydroframeWork/issues/7).
+Currently (4.23.2020) there are discussions about the accuracy of measuring
+memory [[#2]](https://github.com/CompOpt4Apps/IanHydroframeWork/issues/2)
+and alternative methods that include the ability to measure the memory of
+multi-process ParFlow executions [[#7]](https://github.com/CompOpt4Apps/IanHydroframeWork/issues/7).
 
 # Running PBS Test Case Scripts
 
 ***PLEASE READ THESE INSTRUCTIONS COMPLETELY AND CAREFULLY!***
 
 This process is simple, but you need to follow the instructions.
-Not following the instructions will result in time wasted in queues and unnecessary confusion.
+Not following the instructions will result in time wasted in queues and
+unnecessary confusion.
 This document assumes some minimal experience with PBS and Bash.
 
 Your tasks are primarily setting the proper variables in the script.
@@ -445,14 +466,20 @@ There are two environmental components that need to be setup in the test script.
 2. The ParFlow installation environment
 
 ### Setting the Path to Script Directory
-Most importantly `path_to_script_directory` must be set with the absolute path to the `test_domains/sinusoidal/scripts` directory.
-The path should not end with a `/` (e.x. `/thiecho "This is output to the terminal"s/is/an/ok/path`, `/this/is/NOT/an/ok/path/`).
+Most importantly `path_to_script_directory` must be set with the absolute path
+to the `test_domains/sinusoidal/scripts` directory.
+The path should not end with a `/`
+(e.x. `/thiecho "This is output to the terminal"s/is/an/ok/path`,
+      `/this/is/NOT/an/ok/path/`).
 
-Using a text editor or `sed`, replace the string `"PUT THE PROPER SCRIPTS DIRECTORY PATH HERE"` with the correct value and save the script.
+Using a text editor or `sed`, replace the string
+`"PUT THE PROPER SCRIPTS DIRECTORY PATH HERE"` with the correct value and save
+the script.
 
 ### Setting the ParFlow Installation Environment
 
-Second, you must choose how the script knows about the ParFlow installation you would like it to use.
+Second, you must choose how the script knows about the ParFlow installation you
+would like it to use.
 This can be done in one of two ways:
 + Setting the PARFLOW_DIR variable.
   * Used for local installations.
@@ -460,21 +487,32 @@ This can be done in one of two ways:
   * Used if desired ParFlow installation is contained in a module.
 
 #### PARFLOW_DIR
-If the desired ParFlow installation is local (e.g. somewhere in or under your home directory), you should set the `PARFLOW_DIR` path.
-`PARFLOW_DIR` is an existing environment variable required for ParFLow installations.
-`PARFLOW_DIR` should already point to a ParFLow installation directory that contains the bin, lib, and include directories.
+If the desired ParFlow installation is local (e.g. somewhere in or under your
+  home directory), you should set the `PARFLOW_DIR` path.
+`PARFLOW_DIR` is an existing environment variable required for ParFLow
+installations.
+`PARFLOW_DIR` should already point to a ParFLow installation directory that
+contains the bin, lib, and include directories.
 
-If you know you have a local ParFlow installation, but don't know the value of `PARFLOW_DIR`, run the `echo ${PARFLOW_DIR}`
+If you know you have a local ParFlow installation, but don't know the value of
+`PARFLOW_DIR`, run the `echo ${PARFLOW_DIR}`
 
-Using a text editor or `sed`, replace the string `"PUT THE PROPER PARFLOW_DIR PATH HERE"` with the correct value and save the script.
+Using a text editor or `sed`, replace the string
+`"PUT THE PROPER PARFLOW_DIR PATH HERE"` with the correct value and save
+the script.
 
 #### ParFlow Modules
-If the desired ParFlow installation is installed in a global module (such as the `parflow/3/3.6.0` module on Ocelote), you should set the `modules_array` array.
-`modules_array` is an array of module names that will be loaded in the order they are specified in the array.
+If the desired ParFlow installation is installed in a global module
+(such as the `parflow/3/3.6.0` module on Ocelote),
+you should set the `modules_array` array.
+`modules_array` is an array of module names that will be loaded in the order
+they are specified in the array.
 
-Using a text editor, add the list of modules names in between the parenthesis of the definition for `module_array`.
+Using a text editor, add the list of modules names in between the parenthesis
+of the definition for `module_array`.
 
-As an example, to use the ParFlow installed with the `mstrout/parflow/parflow-master-9c0b0f_amps-mpi` module:
+As an example, to use the ParFlow installed with
+the `mstrout/parflow/parflow-master-9c0b0f_amps-mpi` module:
 ```bash
 modules_array=(unsupported mstrout/parflow/parflow-master-9c0b0f_amps-mpi)
 ```
@@ -486,20 +524,25 @@ Each test case has default PBS settings that you may need to change.
 ### group_list
 Chief among them is the `group_list` parameter.
 Currently the default is `mstrout` for Dr. Strout's Ocelote group.
-If you are not in that group, you should change that parameter to the group you are in.
+If you are not in that group, you should change that parameter to the group you
+are in.
 
 This is simply done by replacing `mstrout` by the group name you are a part of.
 
 ### Different PBS Systems
-As a word of caution, I (Ian Bertolacci) have occasionally noticed in PBS documents and tutorials that PBS usage appears to be different in some cases.
-This could be due to PBS version differences, or system specific settings, or the alignment of the moon's phase with anti-axis of the writers authors astrological sign.
-So be aware that your PBS system may not agree with the PBS flags and configuration methods used in the PBS scripts provided here.
+As a word of caution, I (Ian Bertolacci) have occasionally noticed in PBS
+documents and tutorials that PBS usage appears to be different in some cases.
+This could be due to PBS version differences, or system specific settings,
+or the alignment of the moon's phase with anti-axis of the my astrological sign.
+So be aware that your PBS system may not agree with the PBS flags and
+configuration methods used in the PBS scripts provided here.
 
 ## Running Test Case
 Having modified the test cases, we can now run it with the PBS job scheduler.
 None of the provided test cases require additional arguments.
 
-It is recommended to do this in a directory created specifically to collect the output data.
+It is recommended to do this in a directory created specifically to collect the
+output data.
 
 For example, running a setup Large Squarish domain.
 ```bash
@@ -636,28 +679,43 @@ sinusoidal.tcl
 ################################################################################
 ```
 
-The section "100% Complete, Clone to Run Example" has a full example of running the "Hello World PBS" test case, which is identical to running Large Squarish (but takes 5 minutes instead of 30).
+The section "100% Complete, Clone to Run Example" has a full example of running
+the "Hello World PBS" test case, which is identical to running Large Squarish
+(but takes 5 minutes instead of 30).
 
 # 100% Complete, Clone to Run examples
 Here are some examples of starting from nothing, and running test cases.
 
-Some of these examples demonstrate the process of executing PBS test cases, including editing copies of the test case script and spawning a PBS job.
+Some of these examples demonstrate the process of executing PBS test cases,
+including editing copies of the test case script and spawning a PBS job.
 
 # Hello World Manually
-This shows an example of running the sinusoidal domain manually, using the same parameters from the Hello World Script test case.
+This shows an example of running the sinusoidal domain manually, using the same
+parameters from the Hello World Script test case.
 
-This example clones this repository to the home directory, creates a new test directory for managing test scripts and output, sets up the domain configuration in the local Bash environment, and executes the run script.
+This example clones this repository to the home directory, creates a new test
+directory for managing test scripts and output, sets up the domain configuration
+ in the local Bash environment, and executes the run script.
 
 
 # Hello World PBS Test Case
-This shows an example of running the Hello World PBS test case starting from scratch.
-Hello World PBS test case is shown here because it's usage is identical to the other PBS based test cases (unless otherwise noted).
+This shows an example of running the Hello World PBS test case starting from
+scratch.
+Hello World PBS test case is shown here because it's usage is identical to the
+other PBS based test cases (unless otherwise noted).
 
-This example clones this repository to the home directory, creates a new test directory for managing test scripts and output, makes and edits a copy of `tests/hello_world.pbs`, and spawns a PBS job for the edited script.
-In this case, we are using the `modules_array` method of specifying the ParFlow environment, and will use the `mstrout/parflow/parflow-master-9c0b0f_amps-mpi` module installed on Ocelote (which is part of the `unsupported` family of Ocelote modules).
+This example clones this repository to the home directory, creates a new test
+directory for managing test scripts and output, makes and edits a copy of
+`tests/hello_world.pbs`, and spawns a PBS job for the edited script.
+In this case, we are using the `modules_array` method of specifying the
+ParFlow environment, and will use the
+`mstrout/parflow/parflow-master-9c0b0f_amps-mpi` module installed on Ocelote
+(which is part of the `unsupported` family of Ocelote modules).
 
-This case makes edits using `sed`, specifically because I don't know how to show making edits with `vim` in a code block example.
-Regardless, the resulting script is displayed in full, with commends denoting where edits were made.
+This case makes edits using `sed`, specifically because I don't know how to show
+making edits with `vim` in a code block example.
+Regardless, the resulting script is displayed in full, with commends denoting
+where edits were made.
 
 ```bash
 # Start in home directory
